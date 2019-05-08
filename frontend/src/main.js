@@ -2,6 +2,7 @@ const Vue = require('vue')
 const ElementUI = require('element-ui')
 const VueResource = require('vue-resource')
 const VueRouter = require('vue-router')
+const axios = require('axios')
 import App from './App.vue'
 import routers from './router/routers'
 

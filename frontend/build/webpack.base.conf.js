@@ -83,6 +83,7 @@ module.exports = {
     'vue': 'Vue',
     'vue-router': 'VueRouter',
     'element-ui': 'ELEMENT',
-    'vue-resource': 'VueResource'
+    'vue-resource': 'VueResource',
+    'axios': 'axios'
   }    
 }

@@ -58,7 +58,7 @@ export default {
   data () {
     return {
       movies: [],
-      currentPage: 1,
+      currentPage: 0,
       pageSize: 10,
       totalMovie: 0,
       search: '',
@@ -77,12 +77,15 @@ export default {
           value: '全文检索',
           label: '全文检索'
         }],
-      genre: ""
+      genre: "",
+      currentPageMovies: []
     }
   },
 
   mounted: function() {
     this.getJsonInfo()
+    this.currentPage = 1
+    this.getMovieCount()
   },
 
   methods: {
@@ -90,7 +93,6 @@ export default {
         this.$http.options.emulateJSON = true
         this.$http.get('./static/films.json').then(function(response){
             this.movies = response.data
-            this.totalMovie = this.movies.length
         }).catch(function(response){
             console.log(response)
         })
@@ -101,6 +103,16 @@ export default {
     searchTitle(movieTitle) {
       this.command = "按名称"
       this.search = movieTitle
+    },
+    getPageMovies(page) {
+      axios.get('/api/page=' + page).then((response) => {
+        this.currentPageMovies = response.data
+      })
+    },
+    getMovieCount() {
+      axios.get('/api/movieCount').then((response) => {
+        this.totalMovie = response.data
+      })
     }
   },
 
@@ -110,46 +122,14 @@ export default {
         this.currentPage = 1
         this.oldSearch = this.search
       }
-      const val = this.currentPage
-      var conditionList = this.movies
-            .filter((info) => {
-              const text = Object.values(info).join('____').toLowerCase()
-              return text.search(this.search.toLowerCase()) >= 0
-            })
-      var command = this.command
-      if(command === "按名称") {
-          conditionList = this.movies
-            .filter((info) => {
-              const text = Object.values(info.title).join('').toLowerCase()
-              return text.search(this.search.toLowerCase()) >= 0
-            })
-        }
-      if(command === "按导演") {
-          conditionList = this.movies
-            .filter((info) => {
-              var directorList = []
-              info.directors.forEach(element => {
-                directorList.push(element["name"])
-              })
-              const text = Object.values(directorList).join('____').toLowerCase()
-              return text.search(this.search.toLowerCase()) >= 0
-            })
-        }
-      if(command === "按演员") {
-          conditionList = this.movies
-            .filter((info) => {
-              var actorList = []
-              info.casts.forEach(element => {
-                actorList.push(element["name"])
-              })
-              const text = Object.values(actorList).join('____').toLowerCase()
-              return text.search(this.search.toLowerCase()) >= 0
-            })
-        }
-      this.totalMovie = conditionList.length
-      console.log(this.totalMovie)
-      var result = conditionList.slice((val-1)*this.pageSize, val*this.pageSize)
+      var result = this.currentPageMovies
       return result
+    }
+  },
+
+  watch: {
+    currentPage: function() {
+      this.getPageMovies(this.currentPage)
     }
   }
 }

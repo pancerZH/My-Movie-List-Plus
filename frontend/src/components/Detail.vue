@@ -165,7 +165,8 @@
             }
         },
         mounted: function() {
-            this.getJsonInfo()
+            //this.getJsonInfo()
+            this.getCertainMovie(this.$route.params.id)
         },
         methods: {
             getJsonInfo: function() {
@@ -181,6 +182,12 @@
                     this.init()
                 }).catch(function(response){
                 })
+            },
+            getCertainMovie(_id) {
+              axios.get('/api/_id=' + _id).then((response) => {
+                this.detail = response.data[0]
+                this.init()
+              })
             },
             init: function() {
                 this.casts = this.detail.casts

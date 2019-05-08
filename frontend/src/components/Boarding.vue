@@ -27,8 +27,20 @@
         props: ["movieList"],
         data() {
             return {
-                genre: "恐怖"
+                genre: "恐怖",
+                genres: []
             }
+        },
+
+        mounted: async function() {
+            this.genres = await axios.get('/api/genres').then((response) => {
+                var genreSet = response.data
+                var genreOp = []
+                genreSet.forEach(element => {
+                    genreOp.push({"value": element, "label": element})
+                })
+                return genreOp
+            })
         },
 
         methods: {
@@ -38,19 +50,6 @@
         },
 
         computed: {
-            genres() {
-            var genreSet = new Set()
-            this.movieList.forEach(element => {
-                element.genres.forEach(genre => {
-                genreSet.add(genre)
-                })
-            })
-            var genreOp = []
-            genreSet.forEach(element => {
-                genreOp.push({"value": element, "label": element})
-            })
-            return genreOp
-            },
             boardingRes() {
             var conditionList = this.movieList
                     .filter((info) => {
