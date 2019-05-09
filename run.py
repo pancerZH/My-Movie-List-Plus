@@ -14,6 +14,11 @@ mongo = PyMongo(app)
 api = Api(app)
 
 
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+
 # 电影列表相关的API
 class GetPage(Resource):
     def get(self, page):
@@ -117,4 +122,4 @@ api.add_resource(SearchDirectors, '/api/directors&page')
 api.add_resource(SearchSummary, '/api/summary&page')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000)
