@@ -3,7 +3,6 @@ from flask_restful import reqparse, abort, Api, Resource
 from flask_pymongo import PyMongo
 import re
 import random
-from urllib import parse
 
 
 app = Flask(__name__,
