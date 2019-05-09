@@ -97,7 +97,8 @@
               this.poster = require('../assets/LostSource.png')
           },
           goToDetail() {
-              this.$router.push({name: "movie-detail", params: {id: this.id}})
+              let routeUrl = this.$router.resolve({name: "movie-detail", params: {id: this.id}})
+              window.open(routeUrl.href, '_blank')
           }
       },
       watch: {

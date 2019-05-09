@@ -83,7 +83,7 @@ export default {
   },
 
   mounted: function() {
-    this.currentPage = 1
+      this.currentPage = 1
   },
 
   methods: {
