@@ -91,3 +91,18 @@ mongoimport --db movies --collection films --file /xxx/xxx/films_all.json --json
 线上项目地址：http://101.132.158.233:5000
 
 线上项目有效期至2019年6月11日0点。
+
+#### 电影列表
+
+![list](./image/电影列表.png)
+
+#### 搜索
+
+![title](./image/搜索-名称.png)
+
+![dir](./image/搜索-导演.png)
+
+#### 电影详情
+
+![detail](./image/电影详情.png)
+
