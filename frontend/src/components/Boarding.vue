@@ -27,8 +27,10 @@
         props: ["movieList"],
         data() {
             return {
-                genre: "恐怖",
-                genres: []
+                genre: "",
+                genres: [],
+                boardingRes: [],
+                totalRes: []
             }
         },
 
@@ -41,6 +43,10 @@
                 })
                 return genreOp
             })
+            this.genre = this.genres[0].value
+            this.totalRes = await axios.get('/api/genre').then((response) => {
+                return response.data
+            })
         },
 
         methods: {
@@ -49,33 +55,14 @@
             }
         },
 
-        computed: {
-            boardingRes() {
-            var conditionList = this.movieList
-                    .filter((info) => {
-                    const text = Object.values(info.genres).join('____').toLowerCase()
-                    return text.search(this.genre.toLowerCase()) >= 0
-                    })
-            conditionList = conditionList.sort(sortByRating)
-            var result = conditionList.slice(0, 10)
-            return result
-            },
-            totalRes() {
-            var conditionList = this.movieList
-                    .filter((info) => {
-                    const text = Object.values(info.genres).join('____').toLowerCase()
-                    return text.search() >= 0
-                    })
-            conditionList = conditionList.sort(sortByRating)
-            var result = conditionList.slice(0, 10)
-            return result
+        watch: {
+            genre: function() {
+                axios.get('/api/genre=' + this.genre).then((response) => {
+                    this.boardingRes = response.data
+                })
             }
         }
     }
-
-    function sortByRating(movie1, movie2) {
-                return movie2.rating.average - movie1.rating.average
-            }
 </script>
 
 <style scoped>
