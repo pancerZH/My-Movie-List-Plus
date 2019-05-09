@@ -13,6 +13,7 @@ mongo = PyMongo(app)
 api = Api(app)
 
 
+# 电影列表相关的API
 class GetPage(Resource):
     def get(self, page):
         pageSize = 10
@@ -23,6 +24,8 @@ class GetMovieCount(Resource):
     def get(self):
         countMovie = mongo.db.films.count()
         return countMovie
+
+# 电影详情页相关的API
 class GetCertainMovie(Resource):
     def get(self, _id):
         movie = mongo.db.films.find({'_id': _id})
@@ -35,12 +38,24 @@ class GetRandomMovies(Resource):
         skip = num * (page - 1)
         pageRecord = mongo.db.films.find({}, {'poster': 1, 'title': 1, '_id': 1}).limit(num).skip(skip)
         return list(pageRecord)
+
+# 排行榜相关的API
 class GetGenres(Resource):
     def get(self):
         genres = mongo.db.films.find().distinct('genres')
         genres = list(genres)
         genres.remove('')
         return genres
+class GetBoarding(Resource):
+    def get(self, genre):
+        movies = mongo.db.films.find({'genres': genre}, {'title': 1}).sort([("rating.average", -1)]).limit(10)
+        return list(movies)
+class GetTotalBoarding(Resource):
+    def get(self):
+        movies = mongo.db.films.find({}, {'title': 1}).sort([("rating.average", -1)]).limit(10)
+        return list(movies)
+
+# 搜索相关的API
 class SearchTitle(Resource):
     def get(self, title):
         rexExp = re.compile('.*' + title + '.*', re.IGNORECASE)
@@ -68,6 +83,8 @@ api.add_resource(GetMovieCount, '/api/movieCount')
 api.add_resource(GetCertainMovie, '/api/_id=<string:_id>')
 api.add_resource(GetRandomMovies, '/api/random=<int:num>')
 api.add_resource(GetGenres, '/api/genres')
+api.add_resource(GetBoarding, '/api/genre=<string:genre>')
+api.add_resource(GetTotalBoarding, '/api/genre')
 api.add_resource(SearchTitle, '/api/title=<string:title>')
 api.add_resource(SearchCasts, '/api/casts=<string:name>')
 api.add_resource(SearchDirectors, '/api/directors=<string:name>')
