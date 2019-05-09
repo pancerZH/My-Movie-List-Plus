@@ -46,11 +46,11 @@ class GetGenres(Resource):
         return genres
 class GetBoarding(Resource):
     def get(self, genre):
-        movies = mongo.db.films.find({'genres': genre}, {'title': 1}).sort([("rating.average", -1)]).limit(10)
+        movies = mongo.db.films.find({'genres': genre}, {'title': 1}).sort([("rating.average", -1)]).limit(20)
         return list(movies)
 class GetTotalBoarding(Resource):
     def get(self):
-        movies = mongo.db.films.find({}, {'title': 1}).sort([("rating.average", -1)]).limit(10)
+        movies = mongo.db.films.find({}, {'title': 1}).sort([("rating.average", -1)]).limit(20)
         return list(movies)
 
 # 搜索相关的API
