@@ -137,6 +137,8 @@
         data() {
             return {
                 movies: [],
+                randomRes: [],
+                randomMovieCount: 6,
                 detail: [],
                 casts: [],
                 countries: [],
@@ -165,28 +167,19 @@
             }
         },
         mounted: function() {
-            //this.getJsonInfo()
             this.getCertainMovie(this.$route.params.id)
+            this.getRandomMovies()
         },
         methods: {
-            getJsonInfo: function() {
-                this.$http.options.emulateJSON = true
-                this.$http.get('./static/films.json').then(function(response){
-                    this.movies = response.data
-                    this.detail = this.movies
-                        .filter((info) => {
-                        const text = Object.values(info._id).join('').toLowerCase()
-                        return text.search(this.$route.params.id) >= 0
-                        })[0]
-                    this.totalMovie = this.movies.length
-                    this.init()
-                }).catch(function(response){
-                })
-            },
             getCertainMovie(_id) {
               axios.get('/api/_id=' + _id).then((response) => {
                 this.detail = response.data[0]
                 this.init()
+              })
+            },
+            getRandomMovies() {
+              axios.get('/api/random=' + this.randomMovieCount).then((response) => {
+                this.randomRes = response.data
               })
             },
             init: function() {
@@ -226,15 +219,6 @@
             }
         },
         computed: {
-            randomRes() {
-                // var arr = this.movies
-                var Arr = this.movies
-                var n = Math.floor(Math.random() * Arr.length + 1)-1
-                if(n > 200-6)
-                    return Arr.slice(194, 200)
-                else
-                    return Arr.slice(n, n+6)
-            },
             getScoreColor() {
               if(this.rating.average > 7.9)
                 return '#FF9900'
