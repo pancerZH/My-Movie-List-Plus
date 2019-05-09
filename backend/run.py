@@ -3,6 +3,7 @@ from flask_restful import reqparse, abort, Api, Resource
 from flask_pymongo import PyMongo
 import re
 import random
+from urllib import parse
 
 
 app = Flask(__name__,
@@ -18,12 +19,10 @@ class GetPage(Resource):
     def get(self, page):
         pageSize = 10
         skip = pageSize * (page - 1)
-        pageRecord = mongo.db.films.find().limit(pageSize).skip(skip)
-        return list(pageRecord)
-class GetMovieCount(Resource):
-    def get(self):
-        countMovie = mongo.db.films.count()
-        return countMovie
+        pageRecord = mongo.db.films.find()
+        countMovie = pageRecord.count()
+        pageRecord = pageRecord.limit(pageSize).skip(skip)
+        return {'movies': list(pageRecord), 'count': countMovie}
 
 # 电影详情页相关的API
 class GetCertainMovie(Resource):
@@ -57,38 +56,65 @@ class GetTotalBoarding(Resource):
 
 # 搜索相关的API
 class SearchTitle(Resource):
-    def get(self, title):
-        rexExp = re.compile('.*' + title + '.*', re.IGNORECASE)
+    def post(self):
+        data = request.form
+        title = data['title']
+        page = int(data['page'])
+        pageSize = 10
+        skip = pageSize * (page - 1)
+        rexExp = re.compile('.*' + parse.unquote(title) + '.*', re.IGNORECASE)
         movies = mongo.db.films.find({'title': rexExp})
-        return list(movies)
+        countMovie = movies.count()
+        movies = movies.limit(pageSize).skip(skip)
+        return {'movies': list(movies), 'count': countMovie}
 class SearchCasts(Resource):
-    def get(self, name):
+    def post(self):
+        data = request.form
+        name = data['casts']
+        page = int(data['page'])
+        pageSize = 10
+        skip = pageSize * (page - 1)
         rexExp = re.compile('.*' + name + '.*', re.IGNORECASE)
         movies = mongo.db.films.find({'casts.name': rexExp})
-        return list(movies)
+        countMovie = movies.count()
+        movies = movies.limit(pageSize).skip(skip)
+        return {'movies': list(movies), 'count': countMovie}
 class SearchDirectors(Resource):
-    def get(self, name):
+    def post(self):
+        data = request.form
+        name = data['directors']
+        page = int(data['page'])
+        pageSize = 10
+        skip = pageSize * (page - 1)
         rexExp = re.compile('.*' + name + '.*', re.IGNORECASE)
         movies = mongo.db.films.find({'directors.name': rexExp})
-        return list(movies)
+        countMovie = movies.count()
+        movies = movies.limit(pageSize).skip(skip)
+        return {'movies': list(movies), 'count': countMovie}
 class SearchSummary(Resource):
-    def get(self, text):
+    def post(self):
+        data = request.form
+        text = data['text']
+        page = int(data['page'])
+        pageSize = 10
+        skip = pageSize * (page - 1)
         rexExp = re.compile('.*' + text + '.*', re.IGNORECASE)
         movies = mongo.db.films.find({'summary': rexExp})
-        return list(movies)
+        countMovie = movies.count()
+        movies = movies.limit(pageSize).skip(skip)
+        return {'movies': list(movies), 'count': countMovie}
 
 
 api.add_resource(GetPage, '/api/page=<int:page>')
-api.add_resource(GetMovieCount, '/api/movieCount')
 api.add_resource(GetCertainMovie, '/api/_id=<string:_id>')
 api.add_resource(GetRandomMovies, '/api/random=<int:num>')
 api.add_resource(GetGenres, '/api/genres')
 api.add_resource(GetBoarding, '/api/genre=<string:genre>')
 api.add_resource(GetTotalBoarding, '/api/genre')
-api.add_resource(SearchTitle, '/api/title=<string:title>')
-api.add_resource(SearchCasts, '/api/casts=<string:name>')
-api.add_resource(SearchDirectors, '/api/directors=<string:name>')
-api.add_resource(SearchSummary, '/api/summary=<string:text>')
+api.add_resource(SearchTitle, '/api/title&page')
+api.add_resource(SearchCasts, '/api/casts&page')
+api.add_resource(SearchDirectors, '/api/directors&page')
+api.add_resource(SearchSummary, '/api/summary&page')
 
 if __name__ == '__main__':
     app.run(debug=True)

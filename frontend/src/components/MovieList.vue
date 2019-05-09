@@ -63,7 +63,7 @@ export default {
       totalMovie: 0,
       search: '',
       oldSearch: '',
-      command: '全文检索',
+      command: '按名称',
       options: [{
           value: '按名称',
           label: '按名称'
@@ -74,8 +74,8 @@ export default {
           value: '按演员',
           label: '按演员'
         },{
-          value: '全文检索',
-          label: '全文检索'
+          value: '按简介',
+          label: '按简介'
         }],
       genre: "",
       currentPageMovies: []
@@ -83,20 +83,10 @@ export default {
   },
 
   mounted: function() {
-    this.getJsonInfo()
     this.currentPage = 1
-    this.getMovieCount()
   },
 
   methods: {
-  getJsonInfo: function() {
-        this.$http.options.emulateJSON = true
-        this.$http.get('./static/films.json').then(function(response){
-            this.movies = response.data
-        }).catch(function(response){
-            console.log(response)
-        })
-    },
     handleCurrentChange(val) {
       this.currentPage = val
     },
@@ -104,24 +94,50 @@ export default {
       this.command = "按名称"
       this.search = movieTitle
     },
-    getPageMovies(page) {
-      axios.get('/api/page=' + page).then((response) => {
-        this.currentPageMovies = response.data
-      })
-    },
-    getMovieCount() {
-      axios.get('/api/movieCount').then((response) => {
-        this.totalMovie = response.data
+    searchMovies() {
+      if(this.search != this.oldSearch) {
+        this.currentPage = 1
+        this.oldSearch = this.search
+      }
+      var searchUrl = ''
+      var params = new URLSearchParams()
+      if(this.search === '') {
+        searchUrl = '/api/page=' + this.currentPage
+        axios.get(searchUrl).then((response) => {
+          this.currentPageMovies = response.data.movies
+          this.totalMovie = response.data.count
+        })
+        return
+      }
+      else if(this.command === "按名称") {
+        searchUrl = '/api/title&page'
+        params.append('title', this.search)
+        params.append('page', this.currentPage)
+      }
+      else if(this.command === "按导演") {
+        searchUrl = '/api/directors&page'
+        params.append('directors', this.search)
+        params.append('page', this.currentPage)
+      }
+      else if(this.command === "按演员") {
+        searchUrl = '/api/casts&page'
+        params.append('casts', this.search)
+        params.append('page', this.currentPage)
+      }
+      else {
+        searchUrl = '/api/summary&page'
+        params.append('text', this.search)
+        params.append('page', this.currentPage)
+      }
+      axios.post(searchUrl, params).then((response) => {
+          this.currentPageMovies = response.data.movies
+          this.totalMovie = response.data.count
       })
     }
   },
 
   computed: {
     res() {
-      if(this.search != this.oldSearch){
-        this.currentPage = 1
-        this.oldSearch = this.search
-      }
       var result = this.currentPageMovies
       return result
     }
@@ -129,7 +145,13 @@ export default {
 
   watch: {
     currentPage: function() {
-      this.getPageMovies(this.currentPage)
+      this.searchMovies()
+    },
+    search: function() {
+      this.searchMovies()
+    },
+    command: function() {
+      this.searchMovies()
     }
   }
 }
