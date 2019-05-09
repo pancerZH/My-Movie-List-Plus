@@ -84,3 +84,10 @@
 mongoimport --db movies --collection films --file /xxx/xxx/films_all.json --jsonArray
 ```
 
+## 3. 项目演示及说明
+
+项目的演示效果与[第二次作业](https://github.com/pancerZH/My-Movie-List)的演示效果基本一致。
+
+线上项目地址：http://101.132.158.233:5000
+
+线上项目有效期至2019年6月11日0点。
