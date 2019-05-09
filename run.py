@@ -67,7 +67,7 @@ class SearchTitle(Resource):
         page = int(data['page'])
         pageSize = 10
         skip = pageSize * (page - 1)
-        rexExp = re.compile('.*' + parse.unquote(title) + '.*', re.IGNORECASE)
+        rexExp = re.compile('.*' + title + '.*', re.IGNORECASE)
         movies = mongo.db.films.find({'title': rexExp})
         countMovie = movies.count()
         movies = movies.limit(pageSize).skip(skip)
