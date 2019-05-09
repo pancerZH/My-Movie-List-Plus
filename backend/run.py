@@ -2,6 +2,7 @@ from flask import Flask, render_template, jsonify, request
 from flask_restful import reqparse, abort, Api, Resource
 from flask_pymongo import PyMongo
 import re
+import random
 
 
 app = Flask(__name__,
@@ -26,6 +27,14 @@ class GetCertainMovie(Resource):
     def get(self, _id):
         movie = mongo.db.films.find({'_id': _id})
         return list(movie)
+class GetRandomMovies(Resource):
+    def get(self, num):
+        countMovie = mongo.db.films.count()
+        limit = int(countMovie / num)
+        page = random.randint(1, limit)
+        skip = num * (page - 1)
+        pageRecord = mongo.db.films.find({}, {'poster': 1, 'title': 1, '_id': 1}).limit(num).skip(skip)
+        return list(pageRecord)
 class GetGenres(Resource):
     def get(self):
         genres = mongo.db.films.find().distinct('genres')
@@ -57,6 +66,7 @@ class SearchSummary(Resource):
 api.add_resource(GetPage, '/api/page=<int:page>')
 api.add_resource(GetMovieCount, '/api/movieCount')
 api.add_resource(GetCertainMovie, '/api/_id=<string:_id>')
+api.add_resource(GetRandomMovies, '/api/random=<int:num>')
 api.add_resource(GetGenres, '/api/genres')
 api.add_resource(SearchTitle, '/api/title=<string:title>')
 api.add_resource(SearchCasts, '/api/casts=<string:name>')
