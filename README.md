@@ -3,6 +3,49 @@
 
 同济大学软件学院2019年网页开发课程第三次作业
 
+## 部署方法
+
+### 前端
+
+在``./frontend``文件夹下执行：
+
+```shell
+npm install
+npm run dev
+```
+
+如果需要打包，执行：
+
+```shell
+npm run build
+```
+
+### 后端
+
+需要**Python3**运行环境，第三方模块包括：
+
+- Flask
+- Flask-RESTful
+- Flask-PyMongo
+
+在生产环境中，还需要：
+
+- gevent
+
+运行后端：
+
+```shell
+python run.py
+```
+
+### 数据库
+
+具体安装方法请参考MongoDB[官网](https://docs.mongodb.com/manual/installation/)
+
+#### 注意
+
+在生产环境中，请将前端打包后的文件``avatar.png``放入``./static``文件夹下，再启动后端
+
 ## 1. 功能
 
 ### 基础功能
